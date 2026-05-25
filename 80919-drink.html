@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>APCS o711 - 裝飲料模擬器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        .cup-visualization {
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            width: 200px;
+            height: 300px;
+            border-bottom: 3px solid #333;
+            position: relative;
+        }
+        .tier {
+            border: 2px solid #333;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.5);
+            transition: width 0.3s;
+        }
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #6495ed;
+            transition: height 0.5s ease-out;
+        }
+        .input-group { margin-bottom: 10px; }
+        label { display: inline-block; width: 120px; }
+        input { width: 60px; padding: 5px; }
+        button { padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #45a049; }
+        #log { margin-top: 20px; font-size: 0.9em; color: #555; }
+        .highlight { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>裝飲料模擬器 (APCS o711)</h2>
+    <p>杯子由兩個長方體組成，請設定規格：</p>
+    
+    <div class="input-group">
+        <label>下層寬 (w1):</label> <input type="number" id="w1" value="10" min="1">
+        <label>下層高 (h1):</label> <input type="number" id="h1" value="10" min="1">
+    </div>
+    <div class="input-group">
+        <label>上層寬 (w2):</label> <input type="number" id="w2" value="5" min="1">
+        <label>上層高 (h2):</label> <input type="number" id="h2" value="10" min="1">
+    </div>
+    <button onclick="initCup()">更新杯子規格</button>
+    <hr>
+    <div class="input-group">
+        <label>倒入容量 (v):</label> <input type="number" id="v" value="100">
+        <button onclick="pour()">倒入飲料</button>
+        <button onclick="reset()">重設</button>
+    </div>
+
+    <div class="cup-visualization" id="cup-viz">
+        <div id="tier1" class="tier"><div id="liquid1" class="liquid"></div></div>
+        <div id="tier2" class="tier"><div id="liquid2" class="liquid"></div></div>
+    </div>
+
+    <div id="info">
+        目前水位總高度: <span id="cur-h">0</span> cm<br>
+        最大水位上升量: <span id="max-inc" class="highlight">0</span> cm
+    </div>
+
+    <div id="log"></div>
+</div>
+
+<script>
+    let currentTotalVolume = 0;
+    let currentTotalHeight = 0;
